@@ -361,3 +361,10 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Base RoR2 code and other mods
+/Libs/Assembly-CSharp.dll
+/Libs/GeneticsArtifact.dll
+/Libs/ModLoader.dll
+/Libs/VarianceAPI.dll
+/Libs/VAPIEditor.dll
