@@ -32,7 +32,7 @@ namespace GeneticVariantsPatch
             float attackDamageScore = Mathf.Min(attackDamageMaster / attackDamageMult, attackDamageMult / attackDamageMaster);
 
             //Potential maximum fitness of 2 if each stat is a perfect match, even at a 50% each it's still a fitness of 1
-            fitness = (healthScore + moveSpeedScore + attackSpeedScore + attackDamageScore) / 2;
+            fitness = Mathf.Clamp((healthScore + moveSpeedScore + attackSpeedScore + attackDamageScore) / 2, 0.5f, 2f);
         }
 
         public void UpdateSpawnHandlerRate()

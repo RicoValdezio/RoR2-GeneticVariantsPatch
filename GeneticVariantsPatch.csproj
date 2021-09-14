@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <Folder Include="Libs\" />
+    <Folder Include="Thunderstore Stuff\" />
   </ItemGroup>
 
   <ItemGroup>

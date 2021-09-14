@@ -11,7 +11,7 @@ namespace GeneticVariantsPatch
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     public class GeneticVariantsPatchPlugin : BaseUnityPlugin
     {
-        public const string ModVer = "1.0.0";
+        public const string ModVer = "0.1.0";
         public const string ModName = "GenVarPatch";
         public const string ModGuid = "com.RicoValdezio.GeneticVariantsPatch";
         public static GeneticVariantsPatchPlugin Instance;
