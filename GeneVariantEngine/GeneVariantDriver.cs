@@ -19,8 +19,8 @@ namespace GeneticVariantsPatch
         internal static void RegisterHooks()
         {
             On.RoR2.Run.Start += Run_Start;
-            On.RoR2.Stage.Start += Stage_Start;
-            On.RoR2.Run.BeginGameOver += Run_BeginGameOver;
+            RoR2.Stage.onServerStageBegin += Stage_onServerStageBegin;
+            RoR2.Run.onServerGameOver += Run_onServerGameOver; ;
         }
 
         private static void Run_Start(On.RoR2.Run.orig_Start orig, RoR2.Run self)
@@ -56,18 +56,16 @@ namespace GeneticVariantsPatch
             }
         }
 
-        private static void Stage_Start(On.RoR2.Stage.orig_Start orig, RoR2.Stage self)
+        private static void Stage_onServerStageBegin(Stage obj)
         {
-            orig(self);
             if (NetworkServer.active)
             {
                 UpdateAllGeneVariants();
             }
         }
 
-        private static void Run_BeginGameOver(On.RoR2.Run.orig_BeginGameOver orig, Run self, GameEndingDef gameEndingDef)
+        private static void Run_onServerGameOver(Run arg1, GameEndingDef arg2)
         {
-            orig(self, gameEndingDef);
             foreach (GeneVariantBehaviour behaviour in geneVariantBehaviours)
             {
                 behaviour.RestoreBaseSpawnRate();
@@ -87,7 +85,7 @@ namespace GeneticVariantsPatch
 
         public static void UpdateAllGeneVariants()
         {
-            if (NetworkServer.active)
+            if (NetworkServer.active && RunArtifactManager.instance.IsArtifactEnabled(ArtifactOfGenetics.artifactDef))
             {
                 foreach (GeneVariantBehaviour behaviour in geneVariantBehaviours)
                 {
