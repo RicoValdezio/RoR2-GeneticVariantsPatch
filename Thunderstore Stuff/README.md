@@ -15,6 +15,7 @@ Known Issues/Planned Updates
 ------------
 - This is a prototype build of this concept, so balance and polish haven't been taken care of yet
 - If you run into any bugs or have feedback, either reach out in the discord or contribute a issue on the github
+- Have a better idea for an icon? I'll gladly take it since the current one is not great
 
 Changelog
 -----------
