@@ -20,7 +20,8 @@ namespace GeneticVariantsPatch
         {
             On.RoR2.Run.Start += Run_Start;
             RoR2.Stage.onServerStageBegin += Stage_onServerStageBegin;
-            RoR2.Run.onServerGameOver += Run_onServerGameOver; ;
+            RoR2.Run.onServerGameOver += Run_onServerGameOver;
+            On.RoR2.CharacterBody.RecalculateStats += CharacterBody_RecalculateStats;
         }
 
         private static void Run_Start(On.RoR2.Run.orig_Start orig, RoR2.Run self)
@@ -71,6 +72,21 @@ namespace GeneticVariantsPatch
                 behaviour.RestoreBaseSpawnRate();
             }
         }
+
+        private static void CharacterBody_RecalculateStats(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
+        {
+            if(NetworkServer.active && 
+               GeneticVariantsPatchPlugin.enableGeneBlocking.Value &&
+               self.inventory?.GetItemCount(GeneTokens.blockerDef) == 0 &&
+               self.GetComponent<VariantHandler>()?.VariantInfos?.Length > 0)
+            {
+                self.inventory.GiveItem(GeneTokens.blockerDef);
+#if DEBUG
+                GeneticVariantsPatchPlugin.LogSource.LogInfo("Gave GeneBlocker to " + self.name);
+#endif
+            }
+            orig(self);
+        }
         #endregion
 
         private void Update()
@@ -92,8 +108,11 @@ namespace GeneticVariantsPatch
                     if (behaviour.masterGene != null || GeneEngineDriver.masterGenes.Any(master => master.bodyIndex == behaviour.bodyIndex))
                     {
                         if (behaviour.masterGene == null) behaviour.masterGene = GeneEngineDriver.masterGenes.First(master => master.bodyIndex == behaviour.bodyIndex);
-                        behaviour.EvaluateFitness();
-                        behaviour.UpdateSpawnHandlerRate();
+                        if (GeneticVariantsPatchPlugin.enableChanceTweaking.Value)
+                        {
+                            behaviour.EvaluateFitness();
+                            behaviour.UpdateSpawnHandlerRate();
+                        }
                     }
                 }
                 timeSinceUpdate = 0f;

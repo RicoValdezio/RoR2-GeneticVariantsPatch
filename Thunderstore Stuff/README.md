@@ -20,6 +20,11 @@ Known Issues/Planned Updates
 Changelog
 -----------
 ```
+0.2.0
+- Added ability to prevent variants from recieving the genetic bonuses it`s standard version would recieve
+  - Added configuration option to enable/disable the above (enabled by default)
+- Added configuration option to enable/disable the dynamic variant chance tweaking (enabled by default)
+
 0.1.0
 - Prototype release, expect things to be broken/unpolished
 ```
