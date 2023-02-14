@@ -368,3 +368,6 @@ FodyWeavers.xsd
 /Libs/ModLoader.dll
 /Libs/VarianceAPI.dll
 /Libs/VAPIEditor.dll
+/Libs/com.unity.multiplayer-hlapi.Runtime.dll
+/Libs/RoR2.dll
+/Libs/MMHOOK_RoR2.dll
