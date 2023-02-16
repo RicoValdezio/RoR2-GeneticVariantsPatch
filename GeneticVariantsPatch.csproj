@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -10,47 +10,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>Libs\Assembly-CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="BepInEx">
-      <HintPath>Libs\BepInEx.dll</HintPath>
-    </Reference>
-    <Reference Include="FixPluginTypesSerialization">
-      <HintPath>Libs\FixPluginTypesSerialization.dll</HintPath>
-    </Reference>
+    <PackageReference Include="R2API.Core" Version="5.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="GeneticsArtifact">
       <HintPath>Libs\GeneticsArtifact.dll</HintPath>
-    </Reference>
-    <Reference Include="MMHOOK_Assembly-CSharp">
-      <HintPath>Libs\MMHOOK_Assembly-CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="ModLoader">
-      <HintPath>Libs\ModLoader.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil">
-      <HintPath>Libs\Mono.Cecil.dll</HintPath>
-    </Reference>
-    <Reference Include="MonoMod.Utils">
-      <HintPath>Libs\MonoMod.Utils.dll</HintPath>
-    </Reference>
-    <Reference Include="R2API">
-      <HintPath>Libs\R2API.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine">
-      <HintPath>Libs\UnityEngine.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.AssetBundleModule">
-      <HintPath>Libs\UnityEngine.AssetBundleModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>Libs\UnityEngine.CoreModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.Networking">
-      <HintPath>Libs\UnityEngine.Networking.dll</HintPath>
-    </Reference>
-    <Reference Include="VAPIEditor">
-      <HintPath>Libs\VAPIEditor.dll</HintPath>
     </Reference>
     <Reference Include="VarianceAPI">
       <HintPath>Libs\VarianceAPI.dll</HintPath>

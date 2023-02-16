@@ -1,59 +1,67 @@
 ﻿using GeneticsArtifact;
 using RoR2;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
-using VarianceAPI.Components;
-using VarianceAPI.ScriptableObjects;
-using System.Linq;
+using VAPI;
+using VAPI.Components;
 
 namespace GeneticVariantsPatch
 {
     public class GeneVariantDriver : NetworkBehaviour
     {
         public static GeneVariantDriver instance;
-        internal static List<GeneVariantBehaviour> geneVariantBehaviours;
+        internal static GeneVariantBehaviour[] geneVariantBehaviours;
         public static float timeSinceUpdate;
 
         #region Hooks
         internal static void RegisterHooks()
         {
             On.RoR2.Run.Start += Run_Start;
+            RoR2.Run.onRunDestroyGlobal += Run_onRunDestroyGlobal;
             RoR2.Stage.onServerStageBegin += Stage_onServerStageBegin;
-            RoR2.Run.onServerGameOver += Run_onServerGameOver;
             On.RoR2.CharacterBody.RecalculateStats += CharacterBody_RecalculateStats;
         }
 
         private static void Run_Start(On.RoR2.Run.orig_Start orig, RoR2.Run self)
         {
             orig(self);
-            geneVariantBehaviours = new List<GeneVariantBehaviour>();
             timeSinceUpdate = 0f;
             if (NetworkServer.active)
             {
                 instance = self.gameObject.AddComponent<GeneVariantDriver>();
-                foreach (GameObject bodyPrefab in BodyCatalog.allBodyPrefabs)
+
+                VariantDef[] catalogVDefs = (VariantDef[])typeof(VariantCatalog).GetField("registeredVariants", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static).GetValue(null);
+                geneVariantBehaviours = new GeneVariantBehaviour[catalogVDefs.Length];
+
+                int index = 0;
+                foreach (VariantDef variant in catalogVDefs)
                 {
-                    VariantSpawnHandler variantSpawnHandler = bodyPrefab.GetComponent<VariantSpawnHandler>();
-                    if (variantSpawnHandler != null && variantSpawnHandler.variantInfos.Length > 0)
+                    BodyIndex bodyIndex = BodyCatalog.FindBodyIndex(variant.bodyName);
+                    geneVariantBehaviours[index] = new GeneVariantBehaviour
                     {
-                        BodyIndex foundBodyIndex = BodyCatalog.FindBodyIndex(variantSpawnHandler.variantInfos[0].bodyName);
-                        foreach (VariantInfo variant in variantSpawnHandler.variantInfos)
-                        {
-                            geneVariantBehaviours.Add(new GeneVariantBehaviour
-                            {
-                                bodyIndex = foundBodyIndex,
-                                spawnHandler = variantSpawnHandler,
-                                variantName = variant.name,
-                                baseSpawnRate = variant.spawnRate,
-                                healthMult = variant.healthMultiplier,
-                                moveSpeedMult = variant.moveSpeedMultiplier,
-                                attackSpeedMult = variant.attackSpeedMultiplier,
-                                attackDamageMult = variant.damageMultiplier
-                            });
-                        }
-                    }
+                        variantDef = variant,
+                        originalSpawnRate = variant.spawnRate,
+                        bodyIndex = bodyIndex,
+                        variantName = variant.name
+                    };
+                    index++;
                 }
+#if DEBUG
+                GeneticVariantsPatchPlugin.LogSource.LogInfo("Found " + index + " Variants");
+#endif
+            }
+        }
+
+        private static void Run_onRunDestroyGlobal(Run obj)
+        {
+            foreach (GeneVariantBehaviour behaviour in geneVariantBehaviours)
+            {
+                behaviour.ResetSpawnRate();
+#if DEBUG
+                GeneticVariantsPatchPlugin.LogSource.LogMessage("Variant: " + behaviour.variantName + " reset SR " + behaviour.variantDef.spawnRate + ", OSR " + behaviour.originalSpawnRate);
+#endif
             }
         }
 
@@ -65,20 +73,12 @@ namespace GeneticVariantsPatch
             }
         }
 
-        private static void Run_onServerGameOver(Run arg1, GameEndingDef arg2)
-        {
-            foreach (GeneVariantBehaviour behaviour in geneVariantBehaviours)
-            {
-                behaviour.RestoreBaseSpawnRate();
-            }
-        }
-
         private static void CharacterBody_RecalculateStats(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
         {
-            if(NetworkServer.active && 
+            if (NetworkServer.active &&
                GeneticVariantsPatchPlugin.enableGeneBlocking.Value &&
                self.inventory?.GetItemCount(GeneTokens.blockerDef) == 0 &&
-               self.GetComponent<VariantHandler>()?.VariantInfos?.Length > 0)
+               self.GetComponent<BodyVariantManager>()?.variantsInBody?.Count > 0)
             {
                 self.inventory.GiveItem(GeneTokens.blockerDef);
 #if DEBUG
@@ -93,7 +93,7 @@ namespace GeneticVariantsPatch
         {
             if (!NetworkServer.active) return;
             timeSinceUpdate += Time.deltaTime;
-            if(timeSinceUpdate >= 60f)
+            if (timeSinceUpdate >= 60f)
             {
                 UpdateAllGeneVariants();
             }
@@ -111,10 +111,13 @@ namespace GeneticVariantsPatch
                         if (GeneticVariantsPatchPlugin.enableChanceTweaking.Value)
                         {
                             behaviour.EvaluateFitness();
-                            behaviour.UpdateSpawnHandlerRate();
                         }
+#if DEBUG
+                        GeneticVariantsPatchPlugin.LogSource.LogMessage("Variant: " + behaviour.variantName + " now has SR " + behaviour.variantDef.spawnRate + " FIT " + behaviour.fitness + " TS  " + behaviour.totalScore + ", OSR " + behaviour.originalSpawnRate);
+#endif
                     }
                 }
+
                 timeSinceUpdate = 0f;
             }
         }

@@ -1,8 +1,8 @@
-﻿using RoR2;
-using GeneticsArtifact;
-using VarianceAPI.Components;
-using System.Linq;
+﻿using GeneticsArtifact;
+using RoR2;
+using System;
 using UnityEngine;
+using VAPI;
 
 namespace GeneticVariantsPatch
 {
@@ -10,12 +10,13 @@ namespace GeneticVariantsPatch
     {
         public BodyIndex bodyIndex;
         internal MasterGeneBehaviour masterGene;
-        internal VariantSpawnHandler spawnHandler;
+        internal VariantDef variantDef;
 
         public string variantName;
-        public float baseSpawnRate, healthMult, moveSpeedMult, attackSpeedMult, attackDamageMult;
+        public float originalSpawnRate;
 
-        public float currSpawnRate = 0f, fitness;
+        public float fitness;
+        public double totalScore;
 
         public void EvaluateFitness()
         {
@@ -26,28 +27,20 @@ namespace GeneticVariantsPatch
             float attackDamageMaster = masterGene.templateGenes[GeneStat.AttackDamage];
 
             //Smaller percent of them relative to eachother
-            float healthScore = Mathf.Min(healthMaster / healthMult, healthMult / healthMaster);
-            float moveSpeedScore = Mathf.Min(moveSpeedMaster / moveSpeedMult, moveSpeedMult / moveSpeedMaster);
-            float attackSpeedScore = Mathf.Min(attackSpeedMaster / attackSpeedMult, attackSpeedMult / attackSpeedMaster);
-            float attackDamageScore = Mathf.Min(attackDamageMaster / attackDamageMult, attackDamageMult / attackDamageMaster);
+            float healthScore = Mathf.Min(healthMaster / variantDef.healthMultiplier, variantDef.healthMultiplier / healthMaster);
+            float moveSpeedScore = Mathf.Min(moveSpeedMaster / variantDef.moveSpeedMultiplier, variantDef.moveSpeedMultiplier / moveSpeedMaster);
+            float attackSpeedScore = Mathf.Min(attackSpeedMaster / variantDef.attackSpeedMultiplier, variantDef.attackSpeedMultiplier / attackSpeedMaster);
+            float attackDamageScore = Mathf.Min(attackDamageMaster / variantDef.damageMultiplier, variantDef.damageMultiplier / attackDamageMaster);
 
-            //Potential maximum fitness of 2 if each stat is a perfect match, even at a 50% each it's still a fitness of 1
-            fitness = Mathf.Clamp((healthScore + moveSpeedScore + attackSpeedScore + attackDamageScore) / 2, 0.5f, 2f);
+            //New fitness uses a hyperbolic secant centered around 4, since 4 is the max score
+            totalScore = healthScore + moveSpeedScore + attackSpeedScore + attackDamageScore;
+            fitness = (float)(2 / Math.Pow(Math.Cosh(totalScore - 4), 1.6));
+            variantDef.spawnRate = Mathf.Clamp(originalSpawnRate * fitness, originalSpawnRate * (1 - GeneticVariantsPatchPlugin.maxGeneChanceInfluence.Value), originalSpawnRate * (1 + GeneticVariantsPatchPlugin.maxGeneChanceInfluence.Value));
         }
 
-        public void UpdateSpawnHandlerRate()
+        public void ResetSpawnRate()
         {
-            float prevSpawnRate = currSpawnRate;
-            currSpawnRate = Mathf.Clamp(baseSpawnRate * fitness, 0, 100);
-#if DEBUG
-            GeneticVariantsPatchPlugin.LogSource.LogInfo("Variant " + variantName + "'s Spawn Rate was: " + prevSpawnRate + " and is now: " + currSpawnRate);
-#endif
-            spawnHandler.variantInfos.First(variant => variant.name.Equals(variantName)).spawnRate = currSpawnRate;
-        }
-
-        public void RestoreBaseSpawnRate()
-        {
-            spawnHandler.variantInfos.First(variant => variant.name.Equals(variantName)).spawnRate = baseSpawnRate;
+            variantDef.spawnRate = originalSpawnRate;
         }
     }
 }

@@ -20,6 +20,15 @@ Known Issues/Planned Updates
 Changelog
 -----------
 ```
+0.3.0
+- Updated for VarianceAPI v2 (Nebby my beloved, make the catalog public)
+  - Due to the new VAPI structure, the method of adjusting spawn rate isn`t super safe and may break on conflict
+- Added config option to set the maximum effect this mod can have on each spawn rate (globally)
+  - Default value is 0.5 - variants will be up to 50% more/less common than their base rate
+- Fitness evaluation is much stricter now and uses fancier maths for the spawn rate tweaks
+  - Simple variants are much more likely to spawn early into runs, but taper off as the algorithm learns
+  - Extreme variants are unlikly to spawn early, but can dramatically increase later on
+
 0.2.0
 - Added ability to prevent variants from recieving the genetic bonuses it`s standard version would recieve
   - Added configuration option to enable/disable the above (enabled by default)
