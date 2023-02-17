@@ -1,6 +1,5 @@
 ﻿using GeneticsArtifact;
 using RoR2;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -56,13 +55,17 @@ namespace GeneticVariantsPatch
 
         private static void Run_onRunDestroyGlobal(Run obj)
         {
-            foreach (GeneVariantBehaviour behaviour in geneVariantBehaviours)
+            if (NetworkServer.active)
             {
-                behaviour.ResetSpawnRate();
+                foreach (GeneVariantBehaviour behaviour in geneVariantBehaviours)
+                {
+                    behaviour.ResetSpawnRate();
 #if DEBUG
                 GeneticVariantsPatchPlugin.LogSource.LogMessage("Variant: " + behaviour.variantName + " reset SR " + behaviour.variantDef.spawnRate + ", OSR " + behaviour.originalSpawnRate);
 #endif
+                }
             }
+
         }
 
         private static void Stage_onServerStageBegin(Stage obj)

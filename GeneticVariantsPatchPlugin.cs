@@ -1,6 +1,6 @@
 ﻿using BepInEx;
-using BepInEx.Logging;
 using BepInEx.Configuration;
+using BepInEx.Logging;
 using R2API.Utils;
 
 namespace GeneticVariantsPatch
