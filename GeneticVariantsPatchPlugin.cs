@@ -6,13 +6,12 @@ using R2API.Utils;
 namespace GeneticVariantsPatch
 {
     [BepInPlugin(ModGuid, ModName, ModVer)]
-    [BepInDependency("com.bepis.r2api", BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency("com.RicoValdezio.ArtifactOfGenetics", BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency("com.Nebby.VAPI", BepInDependency.DependencyFlags.HardDependency)]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     public class GeneticVariantsPatchPlugin : BaseUnityPlugin
     {
-        public const string ModVer = "0.3.0";
+        public const string ModVer = "0.4.0";
         public const string ModName = "GenVarPatch";
         public const string ModGuid = "com.RicoValdezio.GeneticVariantsPatch";
         public static GeneticVariantsPatchPlugin Instance;

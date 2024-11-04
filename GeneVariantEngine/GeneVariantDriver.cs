@@ -31,7 +31,8 @@ namespace GeneticVariantsPatch
             {
                 instance = self.gameObject.AddComponent<GeneVariantDriver>();
 
-                VariantDef[] catalogVDefs = (VariantDef[])typeof(VariantCatalog).GetField("registeredVariants", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static).GetValue(null);
+                // Nebby changed the name to _registeredVariants, but there's gotta be a better way to read all the variants without regard to their body index
+                VariantDef[] catalogVDefs = (VariantDef[])typeof(VariantCatalog).GetField("_registeredVariants", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static).GetValue(null);
                 geneVariantBehaviours = new GeneVariantBehaviour[catalogVDefs.Length];
 
                 int index = 0;

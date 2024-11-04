@@ -1,4 +1,4 @@
-﻿Basic Description
+Basic Description
 ------------
 - This mod adapts the stat-based learning system from GeneticArtifact to the variant selection system of VarianceAPI
 - This doesn't evaluate the performance of each variant, but instead suggests variants based on the stats they have
@@ -20,6 +20,9 @@ Known Issues/Planned Updates
 Changelog
 -----------
 ```
+0.4.0
+- Updated for Variance v2.2 internal catalog names
+
 0.3.0
 - Updated for VarianceAPI v2 (Nebby my beloved, make the catalog public)
   - Due to the new VAPI structure, the method of adjusting spawn rate isn`t super safe and may break on conflict
